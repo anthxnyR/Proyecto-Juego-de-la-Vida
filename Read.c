@@ -50,6 +50,13 @@ void CrearMatriz(char path[],int generation){                     //Funcion que 
             Mundo[i][j]=(int *)malloc(col*(sizeof(int)));
     }
 
+    int ***MundoAux=(int ***)malloc(generation*(sizeof(int***)));
+    for(int i=0;i<fil;i++){                                                 //Reservo Memoria para la matriz auxiliar.
+        MundoAux[i]=(int **)malloc(fil*(sizeof(int*)));
+        for(int j=0;j<col;j++)
+            MundoAux[i][j]=(int *)malloc(col*(sizeof(int)));
+    }
+
     int j=0,k=0;                                                            
     archivo=fopen(path,"r");                            
     if (archivo!=NULL){                                                     //Leo nuevamente mi archivo para guardar los caracteres 1 y 0
