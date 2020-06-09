@@ -43,13 +43,17 @@ int ***CrearMatriz(char path[]){                     //Funcion que crea la matri
     int col=dimensiones[1];
 
     int ***Mundo=(int ***)malloc(3*(sizeof(int**)));               //Reservo Memoria para llenar mi matriz de enteros con los 
-    for(int i=0;i<fil;i++){                                                 //parametros encontrados
-        Mundo[i]=(int **)malloc(fil*(sizeof(int*)));
-        for(int j=0;j<col;j++)
-            Mundo[i][j]=(int *)malloc(col*(sizeof(int)));
+    for(int i=0;i<fil+2;i++){                                                 //parametros encontrados
+        Mundo[i]=(int **)malloc((fil+2)*(sizeof(int*)));
+        for(int j=0;j<col+2;j++)
+            Mundo[i][j]=(int *)malloc((col+2)*(sizeof(int)));
     }
 
-    int j=0,k=0;                                                            
+    for(int i=0;i<(fil+2);i++)
+        for(int j=0;j<(col+2);j++)
+            Mundo[0][i][j]=9;
+
+    int j=1,k=1;                                                            
     archivo=fopen(path,"r");                            
     if (archivo!=NULL){                                                     //Leo nuevamente mi archivo para guardar los caracteres 1 y 0
         while(!feof(archivo)){
@@ -62,14 +66,15 @@ int ***CrearMatriz(char path[]){                     //Funcion que crea la matri
                 }
             }
             j++;
-            k=0;
+            k=1;
         }
     }
     fclose(archivo);
     printf("\n");
+    printf("Matriz logica\n");
 
-    for(int i=0;i<fil;i++){                                             //Imprimo mi matriz para comprobar
-        for(j=0;j<col;j++)
+    for(int i=0;i<fil+2;i++){                                             //Imprimo mi matriz para comprobar
+        for(j=0;j<col+2;j++)
             printf("%d ",Mundo[0][i][j]);
         printf("\n");                                                   //Falta verificar que las , esten balanceadas y que los numeros no sean 
     }                                                                   //diferentes de 1 y 0.
@@ -84,18 +89,23 @@ int ***MatrizAux(char path[]){
     int col=dimensiones[1];
 
     int ***Aux=(int ***)malloc(3*(sizeof(int**)));               //Reservo Memoria para llenar mi matriz de enteros con los 
-    for(int i=0;i<fil;i++){                                                 //parametros encontrados
-        Aux[i]=(int **)malloc(fil*(sizeof(int*)));
-        for(int j=0;j<col;j++)
-            Aux[i][j]=(int *)malloc(col*(sizeof(int)));
+    for(int i=0;i<fil+2;i++){                                                 //parametros encontrados
+        Aux[i]=(int **)malloc((fil+2)*(sizeof(int*)));
+        for(int j=0;j<col+2;j++)
+            Aux[i][j]=(int *)malloc((col+2)*(sizeof(int)));
     }
+
+    for(int i=0;i<fil+2;i++)
+        for(int j=0;j<col+2;j++)
+            Aux[0][i][j]=9;
+
     return Aux;
 }
 
 void SigGeneration(int ***Mundo, int ***Auxiliar,int *dimensiones){
     int i,j,alive,dead,fil=dimensiones[0],col=dimensiones[1];
-    for(i=0;i<fil;i++)
-        for(j=0;j<col;j++){
+    for(i=1;i<fil+1;i++)
+        for(j=1;j<col+1;j++){
             alive=0;
             if(Mundo[0][i-1][j-1]==1)
                 alive++;
@@ -120,8 +130,8 @@ void SigGeneration(int ***Mundo, int ***Auxiliar,int *dimensiones){
             else Auxiliar[0][i][j]=Mundo[0][i][j];     
         }
     printf("Generacion 2\n");
-    for(i=0;i<fil;i++){
-        for(j=0;j<col;j++)
+    for(i=1;i<fil+1;i++){
+        for(j=1;j<col+1;j++)
             printf("%d ",Auxiliar[0][i][j]);
         printf("\n");
     }
