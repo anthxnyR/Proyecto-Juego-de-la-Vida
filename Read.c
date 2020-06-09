@@ -43,14 +43,14 @@ void CrearMatriz(char path[],int generation){                     //Funcion que 
     int fil=dimensiones[1];
     int col=dimensiones[2];
 
-    int ***Mundo=(int ***)malloc(generation*(sizeof(int**)));               //Reservo Memoria para llenar mi matriz de enteros con los 
+    int ***Mundo=(int ***)malloc(3*(sizeof(int**)));               //Reservo Memoria para llenar mi matriz de enteros con los 
     for(int i=0;i<fil;i++){                                                 //parametros encontrados
         Mundo[i]=(int **)malloc(fil*(sizeof(int*)));
         for(int j=0;j<col;j++)
             Mundo[i][j]=(int *)malloc(col*(sizeof(int)));
     }
 
-    int ***MundoAux=(int ***)malloc(generation*(sizeof(int***)));
+    int ***MundoAux=(int ***)malloc(3*(sizeof(int***)));
     for(int i=0;i<fil;i++){                                                 //Reservo Memoria para la matriz auxiliar.
         MundoAux[i]=(int **)malloc(fil*(sizeof(int*)));
         for(int j=0;j<col;j++)
