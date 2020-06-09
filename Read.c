@@ -3,7 +3,7 @@
 #include<math.h>
 #include<string.h>
 
-int *RevisarMatriz(char path[],int generation){         //Funcion que lee la matriz para conocer las dimensiones que tiene
+int *RevisarMatriz(char path[]){         //Funcion que lee la matriz para conocer las dimensiones que tiene
     FILE *archivo;                                      //Devuelve un puntero a entero con las dimensiones
     char str[100];
     archivo=fopen(path,"r");
@@ -28,33 +28,25 @@ int *RevisarMatriz(char path[],int generation){         //Funcion que lee la mat
         else printf("No Balanceado\n");
     }
     fclose(archivo);
-    int *dimensiones = (int *)malloc(col*(sizeof(int)));
-    dimensiones[0]=generation;
-    dimensiones[1]=fil;
-    dimensiones[2]=col;
+    int *dimensiones = (int *)malloc(2*(sizeof(int)));
+    dimensiones[0]=fil;
+    dimensiones[1]=col;
 
     return dimensiones;
 }
 
-void CrearMatriz(char path[],int generation){                     //Funcion que crea la matriz a partir del archivo leido
+int ***CrearMatriz(char path[]){                     //Funcion que crea la matriz a partir del archivo leido
     FILE *archivo;
     char str[100];
-    int *dimensiones = RevisarMatriz(path,generation);
-    int fil=dimensiones[1];
-    int col=dimensiones[2];
+    int *dimensiones = RevisarMatriz(path);
+    int fil=dimensiones[0];
+    int col=dimensiones[1];
 
     int ***Mundo=(int ***)malloc(3*(sizeof(int**)));               //Reservo Memoria para llenar mi matriz de enteros con los 
     for(int i=0;i<fil;i++){                                                 //parametros encontrados
         Mundo[i]=(int **)malloc(fil*(sizeof(int*)));
         for(int j=0;j<col;j++)
             Mundo[i][j]=(int *)malloc(col*(sizeof(int)));
-    }
-
-    int ***MundoAux=(int ***)malloc(3*(sizeof(int***)));
-    for(int i=0;i<fil;i++){                                                 //Reservo Memoria para la matriz auxiliar.
-        MundoAux[i]=(int **)malloc(fil*(sizeof(int*)));
-        for(int j=0;j<col;j++)
-            MundoAux[i][j]=(int *)malloc(col*(sizeof(int)));
     }
 
     int j=0,k=0;                                                            
@@ -81,12 +73,65 @@ void CrearMatriz(char path[],int generation){                     //Funcion que 
             printf("%d ",Mundo[0][i][j]);
         printf("\n");                                                   //Falta verificar que las , esten balanceadas y que los numeros no sean 
     }                                                                   //diferentes de 1 y 0.
+    return Mundo;
 }
 
+int ***MatrizAux(char path[]){
+    FILE *archivo;
+    char str[100];
+    int *dimensiones = RevisarMatriz(path);
+    int fil=dimensiones[0];
+    int col=dimensiones[1];
 
+    int ***Aux=(int ***)malloc(3*(sizeof(int**)));               //Reservo Memoria para llenar mi matriz de enteros con los 
+    for(int i=0;i<fil;i++){                                                 //parametros encontrados
+        Aux[i]=(int **)malloc(fil*(sizeof(int*)));
+        for(int j=0;j<col;j++)
+            Aux[i][j]=(int *)malloc(col*(sizeof(int)));
+    }
+    return Aux;
+}
 
-void SigGeneration(int ***Mundo);
+void SigGeneration(int ***Mundo, int ***Auxiliar,int *dimensiones){
+    int i,j,alive,dead,fil=dimensiones[0],col=dimensiones[1];
+    for(i=0;i<fil;i++)
+        for(j=0;j<col;j++){
+            alive=0;
+            if(Mundo[0][i-1][j-1]==1)
+                alive++;
+            if(Mundo[0][i-1][j]==1)
+                alive++;
+            if(Mundo[0][i+1][j+1]==1)
+                alive++;
+            if(Mundo[0][i][j-1]==1)
+                alive++;
+            if(Mundo[0][i][j+1]==1)
+                alive++;
+            if(Mundo[0][i+1][j-1]==1)
+                alive++;
+            if(Mundo[0][i+1][j]==1)
+                alive++;
+            if(Mundo[0][i+1][j+1]==1)
+                alive++;
+            if(Mundo[0][i][j]==1 && (alive<2 || alive>3))
+                Auxiliar[0][i][j]=0;
+            else if(Mundo[0][i][j]==0 && alive==3)
+                Auxiliar[0][i][j]=1;  
+            else Auxiliar[0][i][j]=Mundo[0][i][j];     
+        }
+    printf("Generacion 2\n");
+    for(i=0;i<fil;i++){
+        for(j=0;j<col;j++)
+            printf("%d ",Auxiliar[0][i][j]);
+        printf("\n");
+    }
+}
 
 int main(){
-    CrearMatriz("prueba.txt",5);
+    int ***Mundo;
+    int ***Auxiliar;
+    int *dimensiones=RevisarMatriz("prueba.txt");
+    Mundo=CrearMatriz("prueba.txt");
+    Auxiliar=MatrizAux("prueba.txt");
+    SigGeneration(Mundo,Auxiliar,dimensiones);
 }
