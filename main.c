@@ -82,8 +82,6 @@ int ***CrearMatriz(char path[]){                     //Funcion que crea la matri
 }
 
 int ***MatrizAux(char path[]){
-    FILE *archivo;
-    char str[100];
     int *dimensiones = RevisarMatriz(path);
     int fil=dimensiones[0];
     int col=dimensiones[1];
@@ -103,7 +101,7 @@ int ***MatrizAux(char path[]){
 }
 
 void SigGeneration(int ***Mundo, int ***Auxiliar,int *dimensiones){
-    int i,j,alive,dead,fil=dimensiones[0],col=dimensiones[1];
+    int i,j,alive,fil=dimensiones[0],col=dimensiones[1];
     for(i=1;i<fil+1;i++)
         for(j=1;j<col+1;j++){
             alive=0;
@@ -111,7 +109,7 @@ void SigGeneration(int ***Mundo, int ***Auxiliar,int *dimensiones){
                 alive++;
             if(Mundo[0][i-1][j]==1)
                 alive++;
-            if(Mundo[0][i+1][j+1]==1)
+            if(Mundo[0][i-1][j+1]==1)
                 alive++;
             if(Mundo[0][i][j-1]==1)
                 alive++;
@@ -144,4 +142,5 @@ int main(){
     Mundo=CrearMatriz("prueba.txt");
     Auxiliar=MatrizAux("prueba.txt");
     SigGeneration(Mundo,Auxiliar,dimensiones);
+
 }
