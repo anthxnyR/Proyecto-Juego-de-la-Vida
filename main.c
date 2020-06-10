@@ -100,7 +100,7 @@ int ***MatrizAux(char path[]){
     return Aux;
 }
 
-void SigGeneration(int ***Mundo, int ***Auxiliar,int *dimensiones){
+void SigGeneration(int ***Mundo, int ***Auxiliar,int *dimensiones,int generation){
     int i,j,alive,fil=dimensiones[0],col=dimensiones[1];
     for(i=1;i<fil+1;i++)
         for(j=1;j<col+1;j++){
@@ -127,7 +127,7 @@ void SigGeneration(int ***Mundo, int ***Auxiliar,int *dimensiones){
                 Auxiliar[0][i][j]=1;
             else Auxiliar[0][i][j]=Mundo[0][i][j];
         }
-    printf("Generacion 2\n");
+    printf("Generacion %d\n",generation+1);
     for(i=1;i<fil+1;i++){
         for(j=1;j<col+1;j++)
             printf("%d ",Auxiliar[0][i][j]);
@@ -138,9 +138,20 @@ void SigGeneration(int ***Mundo, int ***Auxiliar,int *dimensiones){
 int main(){
     int ***Mundo;
     int ***Auxiliar;
+    int gen,i=0,flag=0;
     int *dimensiones=RevisarMatriz("prueba.txt");
+    printf("Ingrese el numero de generaciones");
+    scanf("%d",&gen);
     Mundo=CrearMatriz("prueba.txt");
     Auxiliar=MatrizAux("prueba.txt");
-    SigGeneration(Mundo,Auxiliar,dimensiones);
-
+    while(i<gen){
+        if(flag==0){
+            SigGeneration(Mundo,Auxiliar,dimensiones,i);
+            flag=1;
+        }else if(flag==1){
+            SigGeneration(Auxiliar,Mundo,dimensiones,i);
+            flag=0;
+        }
+        i++;
+    }
 }
