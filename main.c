@@ -134,7 +134,7 @@ int ***NextGenClassic(int ***Mundo, int ***Auxiliar,int *dimensiones,int idx){
     return Auxiliar;
 }
 
-int ***NextGenVert(int ***Mundo, int ***Auxiliar, int *dimensiones,int idx){     //Recibe idx que indicara el indice de la matriz que trabaja
+int ***NextGenHor(int ***Mundo, int ***Auxiliar, int *dimensiones,int idx){     //Recibe idx que indicara el indice de la matriz que trabaja
     int i,j,alive,fil=dimensiones[0],col=dimensiones[1];
     for(i=1;i<fil+1;i++)
         for(j=1;j<col+1;j++){
@@ -177,7 +177,7 @@ int ***NextGenVert(int ***Mundo, int ***Auxiliar, int *dimensiones,int idx){    
     return Auxiliar;
 }
 
-int ***NextGenHor(int ***Mundo, int ***Auxiliar, int *dimensiones,int idx){
+int ***NextGenVert(int ***Mundo, int ***Auxiliar, int *dimensiones,int idx){
     int i,j,alive,fil=dimensiones[0],col=dimensiones[1];
     for(i=1;i<fil+1;i++)
         for(j=1;j<col+1;j++){
@@ -220,34 +220,69 @@ int ***NextGenHor(int ***Mundo, int ***Auxiliar, int *dimensiones,int idx){
     return Auxiliar;
 }
 
-/*void StartGame(char path[],int generation){
-    int i=0,flag=0;
+void StartGame(char path[],int generation){
+    int i=1,flag=0;
     int ***Mundo, ***Auxiliar;
     int *dimensiones=RevisarMatriz(path);
     Mundo=CrearMatriz(path);
     Auxiliar=MatrizAux(path);
+    while(i<=generation){
+        if(flag==0){
+            NextGenClassic(Mundo,Auxiliar,dimensiones,0);
+            NextGenHor(Mundo,Auxiliar,dimensiones,1);
+            NextGenVert(Mundo,Auxiliar,dimensiones,2);
 
-}*/
+            printf("Generacion %d\n\n",i);
+            printf("  Classic          Horizontal        Vertical\n");
+            for(int j=1;j<dimensiones[0]+1;j++){
+
+                for(int k=1;k<dimensiones[1]+1;k++)
+                    printf("%d ",Auxiliar[0][j][k]);
+                printf("   ");
+                for(int k=1;k<dimensiones[1]+1;k++)
+                    printf("%d ",Auxiliar[1][j][k]);
+                printf("   ");
+                for(int k=1;k<dimensiones[1]+1;k++)
+                    printf("%d ",Auxiliar[2][j][k]);
+                printf("\n");
+            }
+            flag=1;
+        }else if(flag==1){
+            NextGenClassic(Auxiliar,Mundo,dimensiones,0);
+            NextGenHor(Auxiliar,Mundo,dimensiones,1);
+            NextGenVert(Auxiliar,Mundo,dimensiones,2);
+
+            printf("Generacion %d\n\n",i);
+            printf("  Classic          Horizontal        Vertical\n");
+            for(int j=1;j<dimensiones[0]+1;j++){
+                for(int k=1;k<dimensiones[1]+1;k++)
+                    printf("%d ",Mundo[0][j][k]);
+                printf("   ");
+                for(int k=1;k<dimensiones[1]+1;k++)
+                    printf("%d ",Mundo[1][j][k]);
+                printf("   ");
+                for(int k=1;k<dimensiones[1]+1;k++)
+                    printf("%d ",Mundo[2][j][k]);
+                printf("\n");
+            }
+            flag=0;
+        }
+        i++;
+        printf("\n");
+    }
+
+}
 
 int main(){
     int ***Mundo;
     int ***Auxiliar;
     int gen,i=0,flag=0;
-    int *dimensiones=RevisarMatriz("prueba.txt");
-    printf("Ingrese el numero de generaciones");
+    char path[100];
+    printf("Ingrese el numero de generaciones\n");
     scanf("%d",&gen);
-    Mundo=CrearMatriz("prueba.txt");
-    Auxiliar=MatrizAux("prueba.txt");
-    Auxiliar=NextGenClassic(Mundo,Auxiliar,dimensiones,0);
-    Auxiliar=NextGenHor(Mundo,Auxiliar,dimensiones,1);
-
-    for(i=1;i<dimensiones[0]+1;i++){
-        for(int j=1;j<dimensiones[1]+1;j++)
-            printf("%d ",Auxiliar[0][i][j]);
-        printf("   ");
-        for(int j=1;j<dimensiones[1]+1;j++)
-            printf("%d ",Auxiliar[1][i][j]);
-        printf("\n");
-    }
+    printf("Ingrese el documento a agregar\n");
+    scanf("%s",path);
+    int *dimensiones=RevisarMatriz(path);
+    StartGame(path,gen);
     return 0;
 }
