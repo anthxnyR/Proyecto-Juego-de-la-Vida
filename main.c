@@ -220,7 +220,7 @@ int ***NextGenVert(int ***Mundo, int ***Auxiliar, int *dimensiones,int idx){
     return Auxiliar;
 }
 
-void StartGame(char path[],int generation){
+void StartGame(char path[],int generation, int milseg){
     int i=1,flag=0;
     int ***Mundo, ***Auxiliar;
     int *dimensiones=RevisarMatriz(path);
@@ -232,6 +232,8 @@ void StartGame(char path[],int generation){
             NextGenHor(Mundo,Auxiliar,dimensiones,1);
             NextGenVert(Mundo,Auxiliar,dimensiones,2);
 
+            if(i!=1)
+                sleep(milseg);
             printf("Generacion %d\n\n",i);
             printf("  Classic          Horizontal        Vertical\n");
             for(int j=1;j<dimensiones[0]+1;j++){
@@ -252,6 +254,7 @@ void StartGame(char path[],int generation){
             NextGenHor(Auxiliar,Mundo,dimensiones,1);
             NextGenVert(Auxiliar,Mundo,dimensiones,2);
 
+            sleep(milseg);
             printf("Generacion %d\n\n",i);
             printf("  Classic          Horizontal        Vertical\n");
             for(int j=1;j<dimensiones[0]+1;j++){
@@ -277,12 +280,16 @@ int main(){
     int ***Mundo;
     int ***Auxiliar;
     int gen,i=0,flag=0;
+    float milseg;
     char path[100];
     printf("Ingrese el numero de generaciones\n");
     scanf("%d",&gen);
     printf("Ingrese el documento a agregar\n");
     scanf("%s",path);
-    int *dimensiones=RevisarMatriz(path);
-    StartGame(path,gen);
+    printf("Ingrese el tiempo de espera en milisegundos\n");
+    scanf("%f",&milseg);
+    milseg=milseg/1000;
+    printf("%f\n",milseg,milseg);
+    StartGame(path,gen,milseg);
     return 0;
 }
