@@ -4,9 +4,10 @@
 #include<string.h>
 
 int *RevisarMatriz(char path[]){         //Funcion que lee la matriz para conocer las dimensiones que tiene
-    FILE *archivo;                                      //Devuelve un puntero a entero con las dimensiones
+    FILE *archivo=NULL;                                      //Devuelve un puntero a entero con las dimensiones
     char str[100];
     archivo=fopen(path,"r");
+    if(archivo==NULL);
     int balance=0;
     int fil=0,col=0;
     if(archivo!=NULL){
@@ -80,9 +81,15 @@ int ***CrearMatriz(char path[]){                     //Funcion que crea la matri
         for(j=0;j<col+2;j++)
             printf("%d ",Mundo[0][i][j]);
         printf("\n");                                                   //Falta verificar que las , esten balanceadas y que los numeros no sean
-    }                                                                   //diferentes de 1 y 0.
+    }
+
+    CreateRecords(Mundo,0,dimensiones);
+    CreateRecords(Mundo,1,dimensiones);
+    CreateRecords(Mundo,2,dimensiones);
+                                                                   //diferentes de 1 y 0.
     return Mundo;
 }
+
 
 int ***MatrizAux(char path[]){
     int *dimensiones = RevisarMatriz(path);
@@ -172,7 +179,7 @@ int ***NextGenHor(int ***Mundo, int ***Auxiliar, int *dimensiones,int idx){     
                 else if(Mundo[idx][i][j]==0 && alive==3)
                     Auxiliar[idx][i][j]=1;
                     else
-                        Auxiliar[idx][i][j]=Mundo[0][i][j];
+                        Auxiliar[idx][i][j]=Mundo[idx][i][j];
         }
     return Auxiliar;
 }
@@ -221,6 +228,7 @@ int ***NextGenVert(int ***Mundo, int ***Auxiliar, int *dimensiones,int idx){
 }
 
 void StartGame(char path[],int generation, int milseg){
+    FILE *archivo;
     int i=1,flag=0;
     int ***Mundo, ***Auxiliar;
     int *dimensiones=RevisarMatriz(path);
@@ -249,6 +257,10 @@ void StartGame(char path[],int generation, int milseg){
                 printf("\n");
             }
             flag=1;
+            SaveRecord(Auxiliar,i,dimensiones,0);
+            SaveRecord(Auxiliar,i,dimensiones,1);
+            SaveRecord(Auxiliar,i,dimensiones,2);
+
         }else if(flag==1){
             NextGenClassic(Auxiliar,Mundo,dimensiones,0);
             NextGenHor(Auxiliar,Mundo,dimensiones,1);
@@ -269,12 +281,69 @@ void StartGame(char path[],int generation, int milseg){
                 printf("\n");
             }
             flag=0;
+            SaveRecord(Mundo,i,dimensiones,0);
+            SaveRecord(Mundo,i,dimensiones,1);
+            SaveRecord(Mundo,i,dimensiones,2);
         }
         i++;
         printf("\n");
     }
+}
+
+void CreateRecords(int ***Matriz,int idx,int *dimensiones){
+    int i,j;
+    FILE *archivo;
+    switch(idx){
+        case 0:
+            archivo=fopen("RecordClassic.txt","w");
+            break;
+        case 1:
+            archivo=fopen("RecordHorizontal.txt","w");
+            break;
+        case 2:
+            archivo=fopen("RecordVertical.txt","w");
+            break;
+    }
+    if(archivo){
+        fprintf(archivo,"%s\n","Generacion 0");
+            for(int i=1;i<dimensiones[0]+1;i++){
+                for(int j=1;j<dimensiones[1]+1;j++){
+                    fprintf(archivo,"%d ",Matriz[idx][i][j]);
+                }
+                fprintf(archivo,"\n");
+            }
+        fprintf(archivo,"\n");
+    }
+    fclose(archivo);
 
 }
+
+void SaveRecord(int ***Matriz, int gen, int *dimensiones,int idx){
+    FILE *fp;
+    switch(idx){
+        case 0:
+            fp=fopen("RecordClassic.txt","a+");
+            break;
+        case 1:
+            fp=fopen("RecordHorizontal.txt","a+");
+            break;
+        case 2:
+            fp=fopen("RecordVertical.txt","a+");
+            break;
+    }
+
+    if(fp!=NULL){
+        fprintf(fp,"%s %d\n","Generacion",gen);
+        for(int i=1;i<dimensiones[0]+1;i++){
+            for(int j=1;j<dimensiones[1]+1;j++)
+                fprintf(fp,"%d ",Matriz[idx][i][j]);
+            fprintf(fp, "\n");
+        }
+        fprintf(fp,"\n");
+    }
+    fclose(fp);
+}
+
 
 int main(){
     int ***Mundo;
@@ -286,10 +355,14 @@ int main(){
     scanf("%d",&gen);
     printf("Ingrese el documento a agregar\n");
     scanf("%s",path);
+    if(!strstr(path,".txt"))
+        strcat(path,".txt");
+    printf("%s\n",path);
     printf("Ingrese el tiempo de espera en milisegundos\n");
     scanf("%f",&milseg);
     milseg=milseg/1000;
-    printf("%f\n",milseg,milseg);
+    printf("%f\n",milseg);
+    int *dimensiones=RevisarMatriz(path);
     StartGame(path,gen,milseg);
     return 0;
 }
