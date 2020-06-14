@@ -7,33 +7,32 @@ int *RevisarMatriz(char path[]){         //Funcion que lee la matriz para conoce
     FILE *archivo=NULL;                                      //Devuelve un puntero a entero con las dimensiones
     char str[100];
     archivo=fopen(path,"r");
-    if(archivo==NULL);
-    int balance=0;
-    int fil=0,col=0;
-    if(archivo!=NULL){
-        while(!feof(archivo)){
-            fgets(str,100,archivo);
-            for(int i=0;i<strlen(str);i++){
-                if(str[i]=='{')
-                    balance++;
-                if(str[i]=='}')
-                    balance--;
-                if(str[i]==48||str[i]==49)
-                    col++;
+        int balance=0;
+        int fil=0,col=0;
+        if(archivo!=NULL){
+            while(!feof(archivo)){
+                fgets(str,100,archivo);
+                for(int i=0;i<strlen(str);i++){
+                    if(str[i]=='{')
+                        balance++;
+                    if(str[i]=='}')
+                        balance--;
+                    if(str[i]==48||str[i]==49)
+                        col++;
+                }
+                fil++;
             }
-            fil++;
+            col=col/fil;
+            if(balance==0)
+                printf("Balanceado\n %d Filas\n %d Columnas\n",fil,col);
+            else printf("No Balanceado\n");
         }
-        col=col/fil;
-        if(balance==0)
-            printf("Balanceado\n %d Filas\n %d Columnas\n",fil,col);
-        else printf("No Balanceado\n");
-    }
-    fclose(archivo);
-    int *dimensiones = (int *)malloc(2*(sizeof(int)));
-    dimensiones[0]=fil;
-    dimensiones[1]=col;
+        fclose(archivo);
+        int *dimensiones = (int *)malloc(2*(sizeof(int)));
+        dimensiones[0]=fil;
+        dimensiones[1]=col;
 
-    return dimensiones;
+        return dimensiones;
 }
 
 int ***CrearMatriz(char path[]){                     //Funcion que crea la matriz a partir del archivo leido
@@ -358,6 +357,12 @@ int main(){
     if(!strstr(path,".txt"))
         strcat(path,".txt");
     printf("%s\n",path);
+    FILE *fp=NULL;
+    fp=fopen(path,"r");
+    if(fp==NULL){
+        printf("Archivo no encontrado.\n");
+        return 0;
+    }else fclose(fp);
     printf("Ingrese el tiempo de espera en milisegundos\n");
     scanf("%f",&milseg);
     milseg=milseg/1000;
