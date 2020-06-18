@@ -3,6 +3,9 @@
 #include <math.h>
 #include <string.h>
 #include <unistd.h>
+#include <ctype.h>
+
+int kbhit(void);
 
 void CreateRecords(int ***Matriz,int idx,int *dimensiones){
     int i,j;
@@ -74,7 +77,7 @@ void RemoveBlanks(char *str){
 
 int *RevisarMatriz(char path[]){         //Funcion que lee la matriz para conocer las dimensiones que tiene
     FILE *archivo=NULL;
-    char str[100];
+    char str[1000];
     char array_str[1000]={" "};
     int i=0,j=0;
     int ContKeys=0,col=0,fil=0,flag=0,auxcont=0;
@@ -95,7 +98,6 @@ int *RevisarMatriz(char path[]){         //Funcion que lee la matriz para conoce
     strcat(array_str,str);
     fclose(archivo);
     RemoveBlanks(array_str);
-    printf("%s\n",array_str);
 
 
     //***********************CONDICIONES DE VALIDACIONES**********************
@@ -165,13 +167,11 @@ int *RevisarMatriz(char path[]){         //Funcion que lee la matriz para conoce
         }
 
     }
-        if(ContKeys!=0){
-            printf("ERROR EN MATRIZ\n");
-            dimensiones[0]=-1;
-            return dimensiones;
-        }
-
-    printf("Filas: %d\nColumnas: %d\n",fil,col);
+    if(ContKeys!=0){
+        printf("ERROR EN MATRIZ\n");
+        dimensiones[0]=-1;
+        return dimensiones;
+    }
 
     dimensiones[0]=1;
     dimensiones[1]=fil;
@@ -183,6 +183,7 @@ int *RevisarMatriz(char path[]){         //Funcion que lee la matriz para conoce
 int ***CrearMatriz(char path[]){                     //Funcion que crea la matriz a partir del archivo leido
     FILE *archivo;
     char str[100];
+    char array_str[1000]={" "};
     int *dimensiones = RevisarMatriz(path);
     if(dimensiones[0]==-1)
         EXIT_FAILURE;
@@ -202,37 +203,37 @@ int ***CrearMatriz(char path[]){                     //Funcion que crea la matri
                 Mundo[i][j][k]=9;
 
     int j=1,k=1;
+
     archivo=fopen(path,"r");
     if (archivo!=NULL){                                                     //Leo nuevamente mi archivo para guardar los caracteres 1 y 0
+        fgets(str,100,archivo);
         while(!feof(archivo)){
+            strcat(array_str,str);
             fgets(str,100,archivo);
-            printf("%s\n",str);
-            for(int i=0;i<strlen(str);i++){
-                if(str[i]==48||str[i]==49){
-                    Mundo[0][j][k]=str[i]-'0';
-                    Mundo[1][j][k]=str[i]-'0';
-                    Mundo[2][j][k]=str[i]-'0';
-                    k++;
+        }
+        strcat(array_str,str);
+        fclose(archivo);
+        RemoveBlanks(array_str);
+        for(int i=0;i<strlen(array_str);i++){
+            if(array_str[i]=='0'||array_str[i]=='1'){
+                Mundo[0][j][k]=array_str[i]-'0';
+                Mundo[1][j][k]=array_str[i]-'0';
+                Mundo[2][j][k]=array_str[i]-'0';
+                k++;
+                if(k==col+1){
+                    j++;
+                    k=1;
                 }
             }
-            j++;
-            k=1;
         }
-    }
-    fclose(archivo);
-    printf("\n");
-    printf("Matriz logica\n");
 
-    for(int i=0;i<fil+2;i++){                                             //Imprimo mi matriz para comprobar
-        for(j=0;j<col+2;j++)
-            printf("%d ",Mundo[0][i][j]);
-        printf("\n");                                                   //Falta verificar que las , esten balanceadas y que los numeros no sean
+
     }
 
     CreateRecords(Mundo,0,dimensiones);
     CreateRecords(Mundo,1,dimensiones);
     CreateRecords(Mundo,2,dimensiones);
-                                                                   //diferentes de 1 y 0.
+
     return Mundo;
 }
 
@@ -373,6 +374,32 @@ int ***NextGenVert(int ***Mundo, int ***Auxiliar, int *dimensiones,int idx){
     return Auxiliar;
 }
 
+/*void FreeMemory(int ***Mundo, int ***Aux,int *dimensiones){
+    int fil=dimensiones[1]+2;
+    int col=dimensiones[2]+2;
+    printf("\n%d \n",Mundo[4][0]);
+    for(int i=0;i<fil;i++){
+        for(int j=0;j<col;j++){
+            free(Mundo[i][j]);
+        }
+    }
+    Mundo=NULL;
+
+    for(int i=0;i<fil+2;i++){
+        for(int j=0;j<col+2;j++){
+            free(Aux[i][j]);
+            Aux[i][j]=NULL;
+        }
+        free(Aux[i]);
+        Aux[i]=NULL;
+    }
+    free(Aux);
+    Aux=NULL;
+
+    free(dimensiones);
+    dimensiones=NULL;
+}*/
+
 void StartGame(char path[],int generation, int milseg){
     FILE *archivo;
     int i=1,flag=0;
@@ -380,6 +407,24 @@ void StartGame(char path[],int generation, int milseg){
     int *dimensiones=RevisarMatriz(path);
     Mundo=CrearMatriz(path);
     Auxiliar=MatrizAux(path);
+    printf("    ************ INICIANDO EL JUEGO DE LA VIDA ************\n\n");
+
+    printf("Generacion 0\n\n");
+    printf("  Classic          Horizontal        Vertical\n");
+    for(int j=1;j<dimensiones[1]+1;j++){
+        for(int k=1;k<dimensiones[2]+1;k++)
+            printf("%d ",Mundo[0][j][k]);
+        printf("   ");
+        for(int k=1;k<dimensiones[2]+1;k++)
+            printf("%d ",Mundo[1][j][k]);
+        printf("   ");
+        for(int k=1;k<dimensiones[2]+1;k++)
+            printf("%d ",Mundo[2][j][k]);
+        printf("\n");
+    }
+    printf("\n");
+    sleep(milseg);
+
     while(i<=generation){
         if(flag==0){
             NextGenClassic(Mundo,Auxiliar,dimensiones,0);
@@ -434,6 +479,10 @@ void StartGame(char path[],int generation, int milseg){
         i++;
         printf("\n");
     }
+    //FreeMemory(Mundo,Auxiliar,dimensiones);
+
+    sleep(milseg);
+    printf("\n  ************ FIN DEL JUEGO! ************\n  ******** GRACIAS POR PARTICIPAR ********\n");
 }
 
 
@@ -444,24 +493,27 @@ int main(){
     int gen,i=0,flag=0;
     float milseg;
     char path[100];
+    printf("      **************** BIENVENIDO AL JUEGO DE LA VIDA ****************\n\n");
     printf("Ingrese el numero de generaciones\n");
-    scanf("%d",&gen);
-    printf("Ingrese el documento a agregar\n");
+    if(scanf("%d",&gen)!=1){
+        printf("\nENTRADA NO VALIDA!\n");
+        return 0;
+    }
+    printf("\nIngrese el documento a agregar\n");
     scanf("%s",path);
     if(!strstr(path,".txt"))
         strcat(path,".txt");
-    printf("%s\n",path);
     FILE *fp=NULL;
     fp=fopen(path,"r");
     if(fp==NULL){
-        printf("Archivo no encontrado.\n");
+        printf("\nArchivo no encontrado.\n");
         return 0;
     }else fclose(fp);
-    printf("Ingrese el tiempo de espera en milisegundos\n");
+    printf("\nIngrese el tiempo de espera en milisegundos\n\n");
     scanf("%f",&milseg);
     milseg=milseg/1000;
-    printf("%f\n",milseg);
     int *dimensiones=RevisarMatriz(path);
+    system("clear");
     StartGame(path,gen,milseg);
     return 0;
 }

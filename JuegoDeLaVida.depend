@@ -1,7 +1,9 @@
 # depslib dependency file v1.0
-1592180151 source:/home/anthony/Documents/ProgramII/Proyecto/ProyectoPro2/main.c
+1592457514 source:/home/anthony/Documents/ProgramII/Proyecto/ProyectoPro2/main.c
 	<stdio.h>
 	<stdlib.h>
 	<math.h>
 	<string.h>
+	<unistd.h>
+	<ctype.h>
 
