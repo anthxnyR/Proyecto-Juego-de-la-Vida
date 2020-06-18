@@ -1,46 +1,193 @@
 #include<stdio.h>
 #include <stdlib.h>
-#include<math.h>
-#include<string.h>
+#include <math.h>
+#include <string.h>
+#include <unistd.h>
+
+void CreateRecords(int ***Matriz,int idx,int *dimensiones){
+    int i,j;
+    FILE *archivo;
+    switch(idx){
+        case 0:
+            archivo=fopen("RecordClassic.txt","w");
+            break;
+        case 1:
+            archivo=fopen("RecordHorizontal.txt","w");
+            break;
+        case 2:
+            archivo=fopen("RecordVertical.txt","w");
+            break;
+    }
+    if(archivo){
+        fprintf(archivo,"%s\n","Generacion 0");
+            for(int i=1;i<dimensiones[1]+1;i++){
+                for(int j=1;j<dimensiones[2]+1;j++){
+                    fprintf(archivo,"%d ",Matriz[idx][i][j]);
+                }
+                fprintf(archivo,"\n");
+            }
+        fprintf(archivo,"\n");
+    }
+    fclose(archivo);
+
+}
+
+void SaveRecord(int ***Matriz, int gen, int *dimensiones,int idx){
+    FILE *fp;
+    switch(idx){
+        case 0:
+            fp=fopen("RecordClassic.txt","a+");
+            break;
+        case 1:
+            fp=fopen("RecordHorizontal.txt","a+");
+            break;
+        case 2:
+            fp=fopen("RecordVertical.txt","a+");
+            break;
+    }
+
+    if(fp!=NULL){
+        fprintf(fp,"%s %d\n","Generacion",gen);
+        for(int i=1;i<dimensiones[1]+1;i++){
+            for(int j=1;j<dimensiones[2]+1;j++)
+                fprintf(fp,"%d ",Matriz[idx][i][j]);
+            fprintf(fp, "\n");
+        }
+        fprintf(fp,"\n");
+    }
+    fclose(fp);
+}
+
+void RemoveBlanks(char *str){
+    char straux[strlen(str)];
+    int i=0,j=0;
+    while (str[i]!='\0'){
+        if(!(str[i]==' ') && (!(str[i]=='\n'))){
+            straux[j] = str[i];
+            j++;
+        }
+        i++;
+    }
+    straux[j] = '\0';
+    strcpy(str,straux);
+}
 
 int *RevisarMatriz(char path[]){         //Funcion que lee la matriz para conocer las dimensiones que tiene
-    FILE *archivo=NULL;                                      //Devuelve un puntero a entero con las dimensiones
+    FILE *archivo=NULL;
     char str[100];
+    char array_str[1000]={" "};
+    int i=0,j=0;
+    int ContKeys=0,col=0,fil=0,flag=0,auxcont=0;
+    int *dimensiones = (int *)malloc(3*(sizeof(int)));
     archivo=fopen(path,"r");
-        int balance=0;
-        int fil=0,col=0;
-        if(archivo!=NULL){
-            while(!feof(archivo)){
-                fgets(str,100,archivo);
-                for(int i=0;i<strlen(str);i++){
-                    if(str[i]=='{')
-                        balance++;
-                    if(str[i]=='}')
-                        balance--;
-                    if(str[i]==48||str[i]==49)
-                        col++;
-                }
-                fil++;
-            }
-            col=col/fil;
-            if(balance==0)
-                printf("Balanceado\n %d Filas\n %d Columnas\n",fil,col);
-            else printf("No Balanceado\n");
-        }
-        fclose(archivo);
-        int *dimensiones = (int *)malloc(2*(sizeof(int)));
-        dimensiones[0]=fil;
-        dimensiones[1]=col;
+    if(archivo==NULL){
+        printf("Archivo no encontrado!\n");
+        EXIT_FAILURE;
+    }
 
-        return dimensiones;
+    //***********************DEJAMOS MATRIZ LINEAL****************************
+
+    fgets(str,100,archivo);
+    while(!feof(archivo)){
+        strcat(array_str,str);
+        fgets(str,100,archivo);
+    }
+    strcat(array_str,str);
+    fclose(archivo);
+    RemoveBlanks(array_str);
+    printf("%s\n",array_str);
+
+
+    //***********************CONDICIONES DE VALIDACIONES**********************
+
+    for(i=0;array_str[i]!='\0';i++){
+        if(array_str[i]!='{' && array_str[i]!=',' && array_str[i]!='}' && array_str[i]!='1' && array_str[i]!='0'){
+            printf("ERROR EN MATRIZ");
+            dimensiones[0]=-1;
+            return dimensiones;
+        }
+        if(array_str[i]=='{'){
+            ContKeys++;
+            if(i!=0){
+                col=0;
+                for(j=i;array_str[j]!='}';j++){
+                    if(array_str[j]=='1' || array_str[j]=='0'){
+                        col++;
+                        if(array_str[j+1]!=','&& array_str[j+1]!='}'){
+                            printf("ERROR EN MATRIZ\n");
+                            dimensiones[0]=-1;
+                            return dimensiones;
+                        }
+                    }
+                    if(array_str[j]>=50 && array_str[j]<=58){
+                        printf("ERROR EN MATRIZ\n");
+                        dimensiones[0]=-1;
+                        return dimensiones;
+                    }
+                }
+            }
+            if(flag==0 && i!=0){
+                auxcont=col;
+                flag=1;
+            }
+            if(flag==1 && col!=auxcont){
+                printf("ERROR EN MATRIZ\n");
+                dimensiones[0]=-1;
+                return dimensiones;
+            }
+            if(ContKeys>=3){
+                printf("ERROR EN MATRIZ\n");
+                dimensiones[0]=-1;
+                return dimensiones;
+            }
+
+
+        }
+        if(array_str[i]=='}'){
+            ContKeys--;
+            if(ContKeys==1)
+                fil++;
+            if(array_str[i+1]!=',' && array_str[i+1]!='}' && array_str[i+1]!='\0'){
+                printf("ERROR EN MATRIZ\n");
+                dimensiones[0]=-1;
+                return dimensiones;
+            }
+
+        }
+
+        if(array_str[i]==','){
+            if((array_str[i-1]!='1' && array_str[i-1]!='0')||(array_str[i+1]!='1' && array_str[i+1]!='0'))
+                if(array_str[i-1]!='}' || array_str[i+1]!='{'){
+                    printf("ERROR EN MATRIZ\n");
+                    dimensiones[0]=-1;
+                    return dimensiones;
+                }
+        }
+
+    }
+        if(ContKeys!=0){
+            printf("ERROR EN MATRIZ\n");
+            dimensiones[0]=-1;
+            return dimensiones;
+        }
+
+    printf("Filas: %d\nColumnas: %d\n",fil,col);
+
+    dimensiones[0]=1;
+    dimensiones[1]=fil;
+    dimensiones[2]=col;
+
+    return dimensiones;
 }
 
 int ***CrearMatriz(char path[]){                     //Funcion que crea la matriz a partir del archivo leido
     FILE *archivo;
     char str[100];
     int *dimensiones = RevisarMatriz(path);
-    int fil=dimensiones[0];
-    int col=dimensiones[1];
+    if(dimensiones[0]==-1)
+        EXIT_FAILURE;
+    int fil=dimensiones[1];
+    int col=dimensiones[2];
 
     int ***Mundo=(int ***)malloc(3*(sizeof(int**)));               //Reservo Memoria para llenar mi matriz de enteros con los
     for(int i=0;i<fil+2;i++){                                                 //parametros encontrados
@@ -92,8 +239,8 @@ int ***CrearMatriz(char path[]){                     //Funcion que crea la matri
 
 int ***MatrizAux(char path[]){
     int *dimensiones = RevisarMatriz(path);
-    int fil=dimensiones[0];
-    int col=dimensiones[1];
+    int fil=dimensiones[1];
+    int col=dimensiones[2];
 
     int ***Aux=(int ***)malloc(3*(sizeof(int**)));               //Reservo Memoria para llenar mi matriz de enteros con los
     for(int i=0;i<fil+2;i++){                                                 //parametros encontrados
@@ -111,7 +258,7 @@ int ***MatrizAux(char path[]){
 }
 
 int ***NextGenClassic(int ***Mundo, int ***Auxiliar,int *dimensiones,int idx){
-    int i,j,alive,fil=dimensiones[0],col=dimensiones[1];
+    int i,j,alive,fil=dimensiones[1],col=dimensiones[2];
     for(i=1;i<fil+1;i++)
         for(j=1;j<col+1;j++){
             alive=0;
@@ -141,7 +288,7 @@ int ***NextGenClassic(int ***Mundo, int ***Auxiliar,int *dimensiones,int idx){
 }
 
 int ***NextGenHor(int ***Mundo, int ***Auxiliar, int *dimensiones,int idx){     //Recibe idx que indicara el indice de la matriz que trabaja
-    int i,j,alive,fil=dimensiones[0],col=dimensiones[1];
+    int i,j,alive,fil=dimensiones[1],col=dimensiones[2];
     for(i=1;i<fil+1;i++)
         for(j=1;j<col+1;j++){
             alive=0;
@@ -184,7 +331,7 @@ int ***NextGenHor(int ***Mundo, int ***Auxiliar, int *dimensiones,int idx){     
 }
 
 int ***NextGenVert(int ***Mundo, int ***Auxiliar, int *dimensiones,int idx){
-    int i,j,alive,fil=dimensiones[0],col=dimensiones[1];
+    int i,j,alive,fil=dimensiones[1],col=dimensiones[2];
     for(i=1;i<fil+1;i++)
         for(j=1;j<col+1;j++){
             alive=0;
@@ -243,15 +390,15 @@ void StartGame(char path[],int generation, int milseg){
                 sleep(milseg);
             printf("Generacion %d\n\n",i);
             printf("  Classic          Horizontal        Vertical\n");
-            for(int j=1;j<dimensiones[0]+1;j++){
+            for(int j=1;j<dimensiones[1]+1;j++){
 
-                for(int k=1;k<dimensiones[1]+1;k++)
+                for(int k=1;k<dimensiones[2]+1;k++)
                     printf("%d ",Auxiliar[0][j][k]);
                 printf("   ");
-                for(int k=1;k<dimensiones[1]+1;k++)
+                for(int k=1;k<dimensiones[2]+1;k++)
                     printf("%d ",Auxiliar[1][j][k]);
                 printf("   ");
-                for(int k=1;k<dimensiones[1]+1;k++)
+                for(int k=1;k<dimensiones[2]+1;k++)
                     printf("%d ",Auxiliar[2][j][k]);
                 printf("\n");
             }
@@ -268,14 +415,14 @@ void StartGame(char path[],int generation, int milseg){
             sleep(milseg);
             printf("Generacion %d\n\n",i);
             printf("  Classic          Horizontal        Vertical\n");
-            for(int j=1;j<dimensiones[0]+1;j++){
-                for(int k=1;k<dimensiones[1]+1;k++)
+            for(int j=1;j<dimensiones[1]+1;j++){
+                for(int k=1;k<dimensiones[2]+1;k++)
                     printf("%d ",Mundo[0][j][k]);
                 printf("   ");
-                for(int k=1;k<dimensiones[1]+1;k++)
+                for(int k=1;k<dimensiones[2]+1;k++)
                     printf("%d ",Mundo[1][j][k]);
                 printf("   ");
-                for(int k=1;k<dimensiones[1]+1;k++)
+                for(int k=1;k<dimensiones[2]+1;k++)
                     printf("%d ",Mundo[2][j][k]);
                 printf("\n");
             }
@@ -289,59 +436,6 @@ void StartGame(char path[],int generation, int milseg){
     }
 }
 
-void CreateRecords(int ***Matriz,int idx,int *dimensiones){
-    int i,j;
-    FILE *archivo;
-    switch(idx){
-        case 0:
-            archivo=fopen("RecordClassic.txt","w");
-            break;
-        case 1:
-            archivo=fopen("RecordHorizontal.txt","w");
-            break;
-        case 2:
-            archivo=fopen("RecordVertical.txt","w");
-            break;
-    }
-    if(archivo){
-        fprintf(archivo,"%s\n","Generacion 0");
-            for(int i=1;i<dimensiones[0]+1;i++){
-                for(int j=1;j<dimensiones[1]+1;j++){
-                    fprintf(archivo,"%d ",Matriz[idx][i][j]);
-                }
-                fprintf(archivo,"\n");
-            }
-        fprintf(archivo,"\n");
-    }
-    fclose(archivo);
-
-}
-
-void SaveRecord(int ***Matriz, int gen, int *dimensiones,int idx){
-    FILE *fp;
-    switch(idx){
-        case 0:
-            fp=fopen("RecordClassic.txt","a+");
-            break;
-        case 1:
-            fp=fopen("RecordHorizontal.txt","a+");
-            break;
-        case 2:
-            fp=fopen("RecordVertical.txt","a+");
-            break;
-    }
-
-    if(fp!=NULL){
-        fprintf(fp,"%s %d\n","Generacion",gen);
-        for(int i=1;i<dimensiones[0]+1;i++){
-            for(int j=1;j<dimensiones[1]+1;j++)
-                fprintf(fp,"%d ",Matriz[idx][i][j]);
-            fprintf(fp, "\n");
-        }
-        fprintf(fp,"\n");
-    }
-    fclose(fp);
-}
 
 
 int main(){
