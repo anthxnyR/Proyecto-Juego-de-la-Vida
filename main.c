@@ -411,14 +411,29 @@ void StartGame(char path[],int generation, int milseg){
     printf("    ************ INICIANDO EL JUEGO DE LA VIDA ************\n\n");
 
     printf("Generacion 0\n\n");
-    printf("  Classic          Horizontal        Vertical\n");
+    printf("Classic");
+    for(int cont=4; cont<dimensiones[2]*2; cont++)
+        printf(" ");
+    if(dimensiones[2]<4)
+           printf("   ");   
+    printf("Horizontal");
+    for(int cont=6; cont<dimensiones[2]*2-1; cont++)
+        printf(" ");
+    if(dimensiones[2]<4)
+        printf("    ");     
+    printf("Vertical\n");
+
     for(int j=1;j<dimensiones[1]+1;j++){
         for(int k=1;k<dimensiones[2]+1;k++)
             printf("%d ",Mundo[0][j][k]);
         printf("   ");
+        if(dimensiones[2]<4)
+            printf("   ");
         for(int k=1;k<dimensiones[2]+1;k++)
             printf("%d ",Mundo[1][j][k]);
         printf("   ");
+        if(dimensiones[2]<4)
+            printf("     "); 
         for(int k=1;k<dimensiones[2]+1;k++)
             printf("%d ",Mundo[2][j][k]);
         printf("\n");
@@ -435,17 +450,31 @@ void StartGame(char path[],int generation, int milseg){
             if(i!=1)
                 sleep(milseg);
             printf("Generacion %d\n\n",i);
-            printf("  Classic          Horizontal        Vertical\n");
-            for(int j=1;j<dimensiones[1]+1;j++){
+            printf("Classic");
+            for(int cont=4; cont<dimensiones[2]*2; cont++)
+                printf(" ");
+            if(dimensiones[2]<4)
+                printf("   ");   
+            printf("Horizontal");
+            for(int cont=6; cont<dimensiones[2]*2-1; cont++)
+                printf(" ");
+            if(dimensiones[2]<4)
+                printf("    ");     
+            printf("Vertical\n");
 
+            for(int j=1;j<dimensiones[1]+1;j++){
                 for(int k=1;k<dimensiones[2]+1;k++)
-                    printf("%d ",Auxiliar[0][j][k]);
+                    printf("%d ",Mundo[0][j][k]);
                 printf("   ");
+                if(dimensiones[2]<4)
+                    printf("   ");
                 for(int k=1;k<dimensiones[2]+1;k++)
-                    printf("%d ",Auxiliar[1][j][k]);
+                    printf("%d ",Mundo[1][j][k]);
                 printf("   ");
+                if(dimensiones[2]<4)
+                    printf("     "); 
                 for(int k=1;k<dimensiones[2]+1;k++)
-                    printf("%d ",Auxiliar[2][j][k]);
+                    printf("%d ",Mundo[2][j][k]);
                 printf("\n");
             }
             flag=1;
@@ -460,14 +489,29 @@ void StartGame(char path[],int generation, int milseg){
 
             sleep(milseg);
             printf("Generacion %d\n\n",i);
-            printf("  Classic          Horizontal        Vertical\n");
+            printf("Classic");
+            for(int cont=4; cont<dimensiones[2]*2; cont++)
+                printf(" ");
+            if(dimensiones[2]<4)
+                printf("   ");   
+            printf("Horizontal");
+            for(int cont=6; cont<dimensiones[2]*2-1; cont++)
+                printf(" ");
+            if(dimensiones[2]<4)
+                printf("    ");     
+            printf("Vertical\n");
+
             for(int j=1;j<dimensiones[1]+1;j++){
                 for(int k=1;k<dimensiones[2]+1;k++)
                     printf("%d ",Mundo[0][j][k]);
                 printf("   ");
+                if(dimensiones[2]<4)
+                    printf("   ");
                 for(int k=1;k<dimensiones[2]+1;k++)
                     printf("%d ",Mundo[1][j][k]);
                 printf("   ");
+                if(dimensiones[2]<4)
+                    printf("     "); 
                 for(int k=1;k<dimensiones[2]+1;k++)
                     printf("%d ",Mundo[2][j][k]);
                 printf("\n");
