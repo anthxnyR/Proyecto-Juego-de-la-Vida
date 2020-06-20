@@ -209,20 +209,22 @@ int ***CrearMatriz(char path[]){
     int *dimensiones = RevisarMatriz(path);
     int fil=dimensiones[1];
     int col=dimensiones[2];
+    int i,j,k;
 
     int ***Mundo=(int ***)malloc(3*(sizeof(int**)));
-    for(int i=0;i<fil+2;i++){
+    for(int i=0;i<3;i++){
         Mundo[i]=(int **)malloc((fil+2)*(sizeof(int*)));
-        for(int j=0;j<col+2;j++)
+        for(int j=0;j<fil+2;j++)
             Mundo[i][j]=(int *)malloc((col+2)*(sizeof(int)));
     }
 
-    for(int i=0;i<3;i++)
-        for(int j=0;j<(fil+2);j++)
-            for(int k=0;k<(col+2);k++)
+    for(i=0;i<3;i++)
+        for(j=0;j<(fil+2);j++)
+            for(k=0;k<(col+2);k++)
                 Mundo[i][j][k]=9;
 
-    int j=1,k=1;
+
+    j=1,k=1;
 
     archivo=fopen(path,"r");
     if (archivo!=NULL){
@@ -261,15 +263,13 @@ int ***CrearMatriz(char path[]){
 
 int ***MatrizAux(char path[]){
     int *dimensiones = RevisarMatriz(path);
-    if(dimensiones[0]==-1)
-        return;
     int fil=dimensiones[1];
     int col=dimensiones[2];
 
     int ***Aux=(int ***)malloc(3*(sizeof(int**)));
-    for(int i=0;i<fil+2;i++){
+    for(int i=0;i<3;i++){
         Aux[i]=(int **)malloc((fil+2)*(sizeof(int*)));
-        for(int j=0;j<col+2;j++)
+        for(int j=0;j<fil+2;j++)
             Aux[i][j]=(int *)malloc((col+2)*(sizeof(int)));
     }
 
@@ -431,12 +431,12 @@ void StartGame(char path[],int generation, int milseg){
     for(int cont=4; cont<dimensiones[2]*2; cont++)
         printf(" ");
     if(dimensiones[2]<4)
-           printf("   ");   
+           printf("   ");
     printf("Horizontal");
     for(int cont=6; cont<dimensiones[2]*2-1; cont++)
         printf(" ");
     if(dimensiones[2]<4)
-        printf("    ");     
+        printf("    ");
     printf("Vertical\n");
 
     for(int j=1;j<dimensiones[1]+1;j++){
@@ -449,7 +449,7 @@ void StartGame(char path[],int generation, int milseg){
             printf("%d ",Mundo[1][j][k]);
         printf("   ");
         if(dimensiones[2]<4)
-            printf("     "); 
+            printf("     ");
         for(int k=1;k<dimensiones[2]+1;k++)
             printf("%d ",Mundo[2][j][k]);
         printf("\n");
@@ -470,12 +470,12 @@ void StartGame(char path[],int generation, int milseg){
             for(int cont=4; cont<dimensiones[2]*2; cont++)
                 printf(" ");
             if(dimensiones[2]<4)
-                printf("   ");   
+                printf("   ");
             printf("Horizontal");
             for(int cont=6; cont<dimensiones[2]*2-1; cont++)
                 printf(" ");
             if(dimensiones[2]<4)
-                printf("    ");     
+                printf("    ");
             printf("Vertical\n");
 
             for(int j=1;j<dimensiones[1]+1;j++){
@@ -488,7 +488,7 @@ void StartGame(char path[],int generation, int milseg){
                     printf("%d ",Mundo[1][j][k]);
                 printf("   ");
                 if(dimensiones[2]<4)
-                    printf("     "); 
+                    printf("     ");
                 for(int k=1;k<dimensiones[2]+1;k++)
                     printf("%d ",Mundo[2][j][k]);
                 printf("\n");
@@ -509,12 +509,12 @@ void StartGame(char path[],int generation, int milseg){
             for(int cont=4; cont<dimensiones[2]*2; cont++)
                 printf(" ");
             if(dimensiones[2]<4)
-                printf("   ");   
+                printf("   ");
             printf("Horizontal");
             for(int cont=6; cont<dimensiones[2]*2-1; cont++)
                 printf(" ");
             if(dimensiones[2]<4)
-                printf("    ");     
+                printf("    ");
             printf("Vertical\n");
 
             for(int j=1;j<dimensiones[1]+1;j++){
@@ -527,7 +527,7 @@ void StartGame(char path[],int generation, int milseg){
                     printf("%d ",Mundo[1][j][k]);
                 printf("   ");
                 if(dimensiones[2]<4)
-                    printf("     "); 
+                    printf("     ");
                 for(int k=1;k<dimensiones[2]+1;k++)
                     printf("%d ",Mundo[2][j][k]);
                 printf("\n");
@@ -548,34 +548,26 @@ void StartGame(char path[],int generation, int milseg){
     int fil=dimensiones[1]+2;
     int col=dimensiones[2]+2;
 
-    for(i=0;i<fil;i++){
-        for(int j=0;j<col;j++)
-            printf("%d ",Mundo[0][i][j]);
-        printf("\n");
-    }
 
-    free(Mundo[1][1]);
-
-    /*for(i=0;i<fil;i++){
-        for(int j=0;j<col;j++){
+    for(i=0;i<3;i++){
+        for(int j=0;j<fil;j++){
             free(Mundo[i][j]);
-            Mundo[i][j]=NULL;
         }
-        Mundo[i]=NULL;
+        free(Mundo[i]);
     }
-    Mundo[i]=NULL;
+    free(Mundo);
 
-    for(i=0;i<fil;i++){
-        for(int j=0;j<col;j++){
+    for(i=0;i<3;i++){
+        for(int j=0;j<fil;j++){
             free(Auxiliar[i][j]);
             Auxiliar[i][j]=NULL;
         }
-        Auxiliar[i]=NULL;
+        free(Auxiliar[i]);
     }
-    Auxiliar=NULL;
+    free(Auxiliar);
 
     free(dimensiones);
-    dimensiones=NULL;*/
+    dimensiones=NULL;
 
     printf("\n  ************ FIN DEL JUEGO! ************\n  ******** GRACIAS POR PARTICIPAR ********\n");
 }
