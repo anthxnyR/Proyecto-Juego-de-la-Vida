@@ -480,17 +480,17 @@ void StartGame(char path[],int generation, int milseg){
 
             for(int j=1;j<dimensiones[1]+1;j++){
                 for(int k=1;k<dimensiones[2]+1;k++)
-                    printf("%d ",Mundo[0][j][k]);
+                    printf("%d ",Auxiliar[0][j][k]);
                 printf("   ");
                 if(dimensiones[2]<4)
                     printf("   ");
                 for(int k=1;k<dimensiones[2]+1;k++)
-                    printf("%d ",Mundo[1][j][k]);
+                    printf("%d ",Auxiliar[1][j][k]);
                 printf("   ");
                 if(dimensiones[2]<4)
                     printf("     ");
                 for(int k=1;k<dimensiones[2]+1;k++)
-                    printf("%d ",Mundo[2][j][k]);
+                    printf("%d ",Auxiliar[2][j][k]);
                 printf("\n");
             }
             flag=1;
