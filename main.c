@@ -185,6 +185,12 @@ int *RevisarMatriz(char path[]){
         return dimensiones;
     }
 
+    if(col==0){
+        printf("MATRIZ VACIA!\n");
+        dimensiones[0]=-1;
+        return dimensiones;
+    }
+
     dimensiones[0]=1;
     dimensiones[1]=fil;
     dimensiones[2]=col;
@@ -201,8 +207,6 @@ int ***CrearMatriz(char path[]){
     char str[100];
     char array_str[1000]={" "};
     int *dimensiones = RevisarMatriz(path);
-    if(dimensiones[0]==-1)
-        EXIT_FAILURE;
     int fil=dimensiones[1];
     int col=dimensiones[2];
 
@@ -257,6 +261,8 @@ int ***CrearMatriz(char path[]){
 
 int ***MatrizAux(char path[]){
     int *dimensiones = RevisarMatriz(path);
+    if(dimensiones[0]==-1)
+        return;
     int fil=dimensiones[1];
     int col=dimensiones[2];
 
@@ -399,6 +405,14 @@ int ***NextGenVert(int ***Mundo, int ***Auxiliar, int *dimensiones,int idx){
     return Auxiliar;
 }
 
+void BlankSpaceTS(int *dimensiones){
+    int j=0;
+    while(j<dimensiones[2]){
+        printf(" ");
+        j++;
+    }
+}
+
 //Funcion que hace comenzar el juego. Aqui se desarrolla todo.
 
 void StartGame(char path[],int generation, int milseg){
@@ -406,6 +420,8 @@ void StartGame(char path[],int generation, int milseg){
     int i=1,flag=0;
     int ***Mundo, ***Auxiliar;
     int *dimensiones=RevisarMatriz(path);
+    if(dimensiones[0]==-1)
+        return;
     Mundo=CrearMatriz(path);
     Auxiliar=MatrizAux(path);
     printf("    ************ INICIANDO EL JUEGO DE LA VIDA ************\n\n");
@@ -530,18 +546,27 @@ void StartGame(char path[],int generation, int milseg){
     //***************************** LIBERACION DE MEMORIA ***************************
 
     int fil=dimensiones[1]+2;
+    int col=dimensiones[2]+2;
 
-    for(int i=0;i<3;i++){
-        for(int j=0;j<fil;j++){
+    for(i=0;i<fil;i++){
+        for(int j=0;j<col;j++)
+            printf("%d ",Mundo[0][i][j]);
+        printf("\n");
+    }
+
+    free(Mundo[1][1]);
+
+    /*for(i=0;i<fil;i++){
+        for(int j=0;j<col;j++){
             free(Mundo[i][j]);
             Mundo[i][j]=NULL;
         }
         Mundo[i]=NULL;
     }
-    Mundo=NULL;
+    Mundo[i]=NULL;
 
-    for(int i=0;i<3;i++){
-        for(int j=0;j<fil;j++){
+    for(i=0;i<fil;i++){
+        for(int j=0;j<col;j++){
             free(Auxiliar[i][j]);
             Auxiliar[i][j]=NULL;
         }
@@ -550,7 +575,7 @@ void StartGame(char path[],int generation, int milseg){
     Auxiliar=NULL;
 
     free(dimensiones);
-    dimensiones=NULL;
+    dimensiones=NULL;*/
 
     printf("\n  ************ FIN DEL JUEGO! ************\n  ******** GRACIAS POR PARTICIPAR ********\n");
 }
@@ -583,7 +608,7 @@ int main(){
     }else fclose(fp);
 
 
-    printf("\nIngrese el tiempo de espera en milisegundos\n\n");
+    printf("\nIngrese el tiempo de espera en milisegundos\n");
     if(scanf("%f",&milseg)!=1){
         printf("\nENTRADA DE TIEMPO NO VALIDA!\n");
         return 0;
