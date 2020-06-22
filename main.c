@@ -27,7 +27,9 @@ void CreateRecords(int ***Matriz,int idx,int *dimensiones){
         fprintf(archivo,"%s\n","Generacion 0");
             for(int i=1;i<dimensiones[1]+1;i++){
                 for(int j=1;j<dimensiones[2]+1;j++){
-                    fprintf(archivo,"%d ",Matriz[idx][i][j]);
+                    if(Matriz[idx][i][j]==0)
+                        fprintf(archivo,"- ");
+                    else fprintf(archivo,"O ");
                 }
                 fprintf(archivo,"\n");
             }
@@ -57,7 +59,9 @@ void SaveRecord(int ***Matriz, int gen, int *dimensiones,int idx){
         fprintf(fp,"%s %d\n","Generacion",gen);
         for(int i=1;i<dimensiones[1]+1;i++){
             for(int j=1;j<dimensiones[2]+1;j++)
-                fprintf(fp,"%d ",Matriz[idx][i][j]);
+                if(Matriz[idx][i][j]==0)
+                    fprintf(fp,"- ");
+                else fprintf(fp,"O ");
             fprintf(fp, "\n");
         }
         fprintf(fp,"\n");
@@ -120,6 +124,13 @@ int *RevisarMatriz(char path[]){
             dimensiones[0]=-1;
             return dimensiones;
         }
+
+        if(array_str[0]!='{'){
+            printf("ERROR EN MATRIZ\n");
+            dimensiones[0]=-1;
+            return dimensiones;
+        }
+
         if(array_str[i]=='{'){
             ContKeys++;
             if(i!=0){
@@ -395,7 +406,7 @@ int ***NextGenVert(int ***Mundo, int ***Auxiliar, int *dimensiones,int idx){
                 alive++;
                 else if(Mundo[idx][i+1][j+1]==9 && Mundo[idx][i+1][1]==1)
                     alive++;
-            if(Mundo[idx][i][j]==1 && (alive<2 || alive>3))
+            if(Mundo[idx][i][j]==1 && (alive!=2 && alive!=3))
                 Auxiliar[idx][i][j]=0;
                 else if(Mundo[idx][i][j]==0 && alive==3)
                     Auxiliar[idx][i][j]=1;
@@ -441,21 +452,28 @@ void StartGame(char path[],int generation, int milseg){
 
     for(int j=1;j<dimensiones[1]+1;j++){
         for(int k=1;k<dimensiones[2]+1;k++)
-            printf("%d ",Mundo[0][j][k]);
+            if(Mundo[0][j][k]==0)
+                printf("- ");
+            else printf("O ");
         printf("   ");
         if(dimensiones[2]<4)
             printf("   ");
         for(int k=1;k<dimensiones[2]+1;k++)
-            printf("%d ",Mundo[1][j][k]);
+            if(Mundo[1][j][k]==0)
+                printf("- ");
+            else printf("O ");
         printf("   ");
         if(dimensiones[2]<4)
             printf("     ");
         for(int k=1;k<dimensiones[2]+1;k++)
-            printf("%d ",Mundo[2][j][k]);
+            if(Mundo[2][j][k]==0)
+                printf("- ");
+            else printf("O ");
         printf("\n");
     }
     printf("\n");
-    sleep(milseg);
+    usleep(milseg);
+    system("clear");
 
     while(i<=generation){
         if(flag==0){
@@ -464,7 +482,8 @@ void StartGame(char path[],int generation, int milseg){
             NextGenVert(Mundo,Auxiliar,dimensiones,2);
 
             if(i!=1)
-                sleep(milseg);
+                usleep(milseg);
+            system("clear");
             printf("Generacion %d\n\n",i);
             printf("Classic");
             for(int cont=4; cont<dimensiones[2]*2; cont++)
@@ -480,17 +499,23 @@ void StartGame(char path[],int generation, int milseg){
 
             for(int j=1;j<dimensiones[1]+1;j++){
                 for(int k=1;k<dimensiones[2]+1;k++)
-                    printf("%d ",Auxiliar[0][j][k]);
+                    if(Auxiliar[0][j][k]==0)
+                        printf("- ");
+                    else printf("O ");
                 printf("   ");
                 if(dimensiones[2]<4)
                     printf("   ");
                 for(int k=1;k<dimensiones[2]+1;k++)
-                    printf("%d ",Auxiliar[1][j][k]);
+                    if(Auxiliar[1][j][k]==0)
+                        printf("- ");
+                    else printf("O ");
                 printf("   ");
                 if(dimensiones[2]<4)
                     printf("     ");
                 for(int k=1;k<dimensiones[2]+1;k++)
-                    printf("%d ",Auxiliar[2][j][k]);
+                    if(Auxiliar[2][j][k]==0)
+                        printf("- ");
+                    else printf("O ");
                 printf("\n");
             }
             flag=1;
@@ -503,7 +528,8 @@ void StartGame(char path[],int generation, int milseg){
             NextGenHor(Auxiliar,Mundo,dimensiones,1);
             NextGenVert(Auxiliar,Mundo,dimensiones,2);
 
-            sleep(milseg);
+            usleep(milseg);
+            system("clear");
             printf("Generacion %d\n\n",i);
             printf("Classic");
             for(int cont=4; cont<dimensiones[2]*2; cont++)
@@ -519,17 +545,23 @@ void StartGame(char path[],int generation, int milseg){
 
             for(int j=1;j<dimensiones[1]+1;j++){
                 for(int k=1;k<dimensiones[2]+1;k++)
-                    printf("%d ",Mundo[0][j][k]);
+                    if(Mundo[0][j][k]==0)
+                        printf("- ");
+                    else printf("O ");
                 printf("   ");
                 if(dimensiones[2]<4)
                     printf("   ");
                 for(int k=1;k<dimensiones[2]+1;k++)
-                    printf("%d ",Mundo[1][j][k]);
+                    if(Mundo[1][j][k]==0)
+                        printf("- ");
+                    else printf("O ");
                 printf("   ");
                 if(dimensiones[2]<4)
                     printf("     ");
                 for(int k=1;k<dimensiones[2]+1;k++)
-                    printf("%d ",Mundo[2][j][k]);
+                    if(Mundo[2][j][k]==0)
+                        printf("- ");
+                    else printf("O ");
                 printf("\n");
             }
             flag=0;
@@ -541,7 +573,7 @@ void StartGame(char path[],int generation, int milseg){
         printf("\n");
     }
 
-    sleep(milseg);
+    usleep(milseg);
 
     //***************************** LIBERACION DE MEMORIA ***************************
 
@@ -605,7 +637,7 @@ int main(){
         printf("\nENTRADA DE TIEMPO NO VALIDA!\n");
         return 0;
     }
-    milseg=milseg/1000;
+    milseg=milseg*1000;
 
 
     system("clear");
